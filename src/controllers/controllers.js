@@ -18,11 +18,9 @@ router.get('/', (req, res)=>{
 router.get('/registrarse', (req, res)=>{
 	res.render("registrarse")
 })
-router.get('/borrarUsuario', (req, res)=>{
-	res.render("borrarUsuario")
-})
-router.get('/cambiarNombreDeUsuario', (req, res)=>{
-	res.render("cambiarNombreDeUsuario")
+
+router.get('/iniciarSesion', (req, res)=>{
+	res.render("iniciarSesion")
 })
 
 
@@ -60,46 +58,47 @@ router.post('/registrarse',async (req, res)=>{
 })
 
 
-router.delete('/borrarUsuario',async (req,res)=>{
+router.post('/iniciarSesion', async (req, res)=>{
 	const usuario = await usuarios.findOne({where:{nombreDeUsuario: `${req.body.nombreDeUsuario}`}, raw: true, attributes: ['nombreDeUsuario', 'contraseña', 'id']}) 
-	if(usuario === null){
-		throw res.send("el usuario no existe")
-	}
 	const coincidencia = await bcrypt.compare(`${req.body.contraseña}`, `${usuario.contraseña}`) 
-	if(!coincidencia){
-		res.send("contraseña incorrecta")
+	console.log(usuario)
+	console.log(coincidencia)
+	if(usuario === null || !coincidencia){
+		res.send("nombre de usuario o contraseña incorrectos")
 	}
 	else{
-		res.send("usuario borrado")
-		await usuarios.destroy({where:{id:`${usuario.id}`}})
-	}
-})
-
-router.put('/cambiarNombreDeUsuario', async (req, res)=>{
-	try {
-		await cambiarNombreDeUsuarioSchema.parse(req.body)
-	} catch (error) {
-		if(error instanceof z.ZodError){
-			throw res.send(error.issues[0].message)
-		}
-	}
-	const viejoNombreDeUsuarioYContraseña = await usuarios.findOne({where: {nombreDeUsuario:`${req.body.nombreDeUsuario}`}, attributes:['nombreDeUsuario', 'contraseña','id'], raw: true})
-
-	if(viejoNombreDeUsuarioYContraseña === null){
-		throw res.send("nombre de usuario inexistente")
-	}
-	const compararContraseñas = await bcrypt.compare(`${req.body.contraseña}`, `${viejoNombreDeUsuarioYContraseña.contraseña}`)
-	if(!compararContraseñas){
-		throw res.send("contraseña incorrecta")
-	}else{
-		await usuarios.update(
-			{nombreDeUsuario:`${req.body.nuevoNombreDeUsuario}`},
-			{where: {nombreDeUsuario: `${req.body.nombreDeUsuario}`}}
-		)
-		res.send("nombre de usuario actualizado")
+		res.send("mi perfil")
 	}
 }
 )
+
+
+
+//router.put('/cambiarNombreDeUsuario', async (req, res)=>{
+//	try {
+//		await cambiarNombreDeUsuarioSchema.parse(req.body)
+//	} catch (error) {
+//		if(error instanceof z.ZodError){
+//			throw res.send(error.issues[0].message)
+//		}
+//	}
+//	const viejoNombreDeUsuarioYContraseña = await usuarios.findOne({where: {nombreDeUsuario:`${req.body.nombreDeUsuario}//`}, attributes:['nombreDeUsuario', 'contraseña','id'], raw: true})
+//
+//	if(viejoNombreDeUsuarioYContraseña === null){
+//		throw res.send("nombre de usuario inexistente")
+//	}
+//const compararContraseñas = await bcrypt.compare(`${req.body.contraseña}`, `${viejoNombreDeUsuarioYContraseña.//contraseña}`)
+//	if(!compararContraseñas){
+//		throw res.send("contraseña incorrecta")
+//	}else{
+//		await usuarios.update(
+//			{nombreDeUsuario:`${req.body.nuevoNombreDeUsuario}`},
+//			{where: {nombreDeUsuario: `${req.body.nombreDeUsuario}`}}
+//		)
+//		res.send("nombre de usuario actualizado")
+//	}
+//}
+//)
 
 export default router
 
