@@ -13,6 +13,7 @@ const dirname = path.dirname(fileURLToPath(import.meta.url))
 config.set('views', path.join(dirname, 'views'))
 config.set('view engine', 'ejs')
 config.use(express.json())
+config.use(express.urlencoded({extended:false}))
 config.use(routes)
 
 

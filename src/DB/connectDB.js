@@ -10,4 +10,15 @@ const sequelize = new Sequelize({
 });
 
 
+
+/*(async()=>{
+    try {
+        await sequelize.authenticate()
+        console.log("anda")
+    } catch (error) {
+        console.error(error)
+    }
+    
+})()*/
+
 export default sequelize

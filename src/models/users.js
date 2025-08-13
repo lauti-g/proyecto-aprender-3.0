@@ -26,6 +26,13 @@ const usuarios = sequelize.define('usuarios',{
             len:[4, 100]
         }
     },
+    generos:{
+        type: DataTypes.STRING,
+        allowNull:false,
+        validate:{
+            notEmpty: true,
+        }
+    },
     edad:{
         type: DataTypes.INTEGER,
         allowNull:false,

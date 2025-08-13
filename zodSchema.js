@@ -10,10 +10,10 @@ const registrarUsuarioSchema = z.object({
     ),
 
 
-    email: z.email("tiene que ser un formato mail").min(4).max(100),
+    email: z.email("el mail tiene que ser un formato mail").min(4).max(100),
 
 
-    edad: z.number("tiene que ser un numero").min(18, "solo mayores de 18").max(122, "no creo que seas tan viejo/a"),
+    edad: z.number("la edad tiene que ser un numero").min(18, "solo mayores de 18").max(122, "no creo que seas tan viejo/a"),
 
 
     contraseña: z.string().min(5, "contraseña muy corta(min: 5 characters)")

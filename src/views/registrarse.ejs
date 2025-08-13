@@ -7,20 +7,21 @@
 </head>
 <body>
 	<h1>Registrarse</h1>
-	<form class="formulario">
-		<div><input type="text" placeholder="Nombre de usuario"></div>
+	<form action="/registrarse" method="POST">
+		<div><input type="text" placeholder="Nombre de usuario" name="nombreDeUsuario"></div>
+		<div><input type="email" placeholder="E-Mail" name="email"></div>
 		<div>
-			<select name="genero" id="genero">
-				<option>Genero</option>
-				<option>Hombre</option>
-				<option>Mujer</option>
-				<option>Otro</option>
+			<label for="generos">Elige un genero:</label>
+			<select name="generos" id="generos">
+				<option value="hombre">Hombre</option>
+				<option value="mujer">Mujer</option>
+				<option value="otro">Otro</option>
 			</select>
-			<input type="number" placeholder="edad">
+			<input type="number" placeholder="edad" name="edad">
 		</div>
 		<div>
-			<input type="password" placeholder="Contraseña">
-			<input type="password" placeholder="Confirmar contraseña">
+			<input type="password" placeholder="Contraseña" name="contraseña">
+			<input type="password" placeholder="Confirmar contraseña" name="confirmarContraseña">
 		</div>
 		<input type="submit">
     	<a href="http://localhost:3000/">atras</a>

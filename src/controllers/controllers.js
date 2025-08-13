@@ -3,7 +3,7 @@ import app from 'express'
 const router = app.Router()
 import usuarios from '../models/users.js'
 import {registrarUsuarioSchema, cambiarNombreDeUsuarioSchema} from "../../zodSchema.js";
-import z from "zod"
+import z, { number } from "zod"
 import bcrypt from "bcrypt";
 
 
@@ -35,6 +35,8 @@ router.post('/registrarse',async (req, res)=>{
 				throw res.send("email en uso")
 			}
 		}else{
+			const edadANumero = Number(req.body.edad)
+			req.body.edad = edadANumero
 			const resultado = await registrarUsuarioSchema.parse(req.body)
 			if(resultado !== typeof(Error)){
 				const encriptarContraseña = await bcrypt.hash(`${req.body.contraseña}`, 10)
@@ -42,7 +44,7 @@ router.post('/registrarse',async (req, res)=>{
 				if(resultado){
 					req.body.contraseña = encriptarContraseña
 					await usuarios.create(req.body)
-					res.send("usuario registrado")
+					res.send("mi perfil")
 				}else{
 					res.send("no coinciden las contraseñas")
 				}
@@ -60,45 +62,17 @@ router.post('/registrarse',async (req, res)=>{
 
 router.post('/iniciarSesion', async (req, res)=>{
 	const usuario = await usuarios.findOne({where:{nombreDeUsuario: `${req.body.nombreDeUsuario}`}, raw: true, attributes: ['nombreDeUsuario', 'contraseña', 'id']}) 
-	const coincidencia = await bcrypt.compare(`${req.body.contraseña}`, `${usuario.contraseña}`) 
-	console.log(usuario)
-	console.log(coincidencia)
-	if(usuario === null || !coincidencia){
-		res.send("nombre de usuario o contraseña incorrectos")
+	if(usuario === null){
+		throw res.send("nombre de usuario no existe")
 	}
-	else{
+	const coincidencia = await bcrypt.compare(`${req.body.contraseña}`, `${usuario.contraseña}`) 
+	if(!coincidencia){
+		res.send("contraseña incorrecta")
+	}else{
 		res.send("mi perfil")
 	}
-}
-)
+})
 
-
-
-//router.put('/cambiarNombreDeUsuario', async (req, res)=>{
-//	try {
-//		await cambiarNombreDeUsuarioSchema.parse(req.body)
-//	} catch (error) {
-//		if(error instanceof z.ZodError){
-//			throw res.send(error.issues[0].message)
-//		}
-//	}
-//	const viejoNombreDeUsuarioYContraseña = await usuarios.findOne({where: {nombreDeUsuario:`${req.body.nombreDeUsuario}//`}, attributes:['nombreDeUsuario', 'contraseña','id'], raw: true})
-//
-//	if(viejoNombreDeUsuarioYContraseña === null){
-//		throw res.send("nombre de usuario inexistente")
-//	}
-//const compararContraseñas = await bcrypt.compare(`${req.body.contraseña}`, `${viejoNombreDeUsuarioYContraseña.//contraseña}`)
-//	if(!compararContraseñas){
-//		throw res.send("contraseña incorrecta")
-//	}else{
-//		await usuarios.update(
-//			{nombreDeUsuario:`${req.body.nuevoNombreDeUsuario}`},
-//			{where: {nombreDeUsuario: `${req.body.nombreDeUsuario}`}}
-//		)
-//		res.send("nombre de usuario actualizado")
-//	}
-//}
-//)
 
 export default router
 
