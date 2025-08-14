@@ -26,7 +26,7 @@ const usuarios = sequelize.define('usuarios',{
             len:[4, 100]
         }
     },
-    generos:{
+    genero:{
         type: DataTypes.STRING,
         allowNull:false,
         validate:{

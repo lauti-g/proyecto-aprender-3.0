@@ -1,12 +1,11 @@
-# INICIAMOS EL PROYECTO APRENDER 2.0
+# INICIAMOS EL PROYECTO APRENDER 3.0
 
 usando como base el proyecto anterior el objetivo es mejorarlo todo.
 
 1- reorganizamos el proyecto para que sea mas ordenado
-2- hacemos las consultas a la bd con sequelize
-3- le agregamos validacion con zod
-4- hasheamos contraseña con bcrypt para mayor seguridad.
+2- hice lo posible para que sea mas parecido a la funcionalidad de una pagina, lastimosamente mis pobres conocimientos de front me limitaron    mucho
+3-ahora la pagina si funciona con formularios para algunas funciones
 
-no quise aprender jwt debido a que voy a volver a reorganizar el proyecto para que se pueda ver de mejor formamla funcionalidad del proyecto como una pagina real
+no quise aprender jwt debido a que no se como arrancar con el tema, pero va a ser lo principal en la proxima version.
 
-Proximos objetivos: reestructurar la pagina, conectar front con back, aprender manejo de roles con jwt
+Proximos objetivos: aprender JWT

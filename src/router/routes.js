@@ -7,6 +7,8 @@ routes.get('/registrarse', routes)
 routes.post('/registrarse', routes)
 routes.get('/iniciarSesion', routes)
 routes.post('/iniciarSesion', routes)
+routes.put('/cambiarNombreDeUsuario', routes)
+routes.delete('/borrarUsuario', routes)
 
 
 

@@ -3,7 +3,7 @@ import app from 'express'
 const router = app.Router()
 import usuarios from '../models/users.js'
 import {registrarUsuarioSchema, cambiarNombreDeUsuarioSchema} from "../../zodSchema.js";
-import z, { number } from "zod"
+import z from "zod"
 import bcrypt from "bcrypt";
 
 
@@ -21,6 +21,10 @@ router.get('/registrarse', (req, res)=>{
 
 router.get('/iniciarSesion', (req, res)=>{
 	res.render("iniciarSesion")
+})
+
+router.get('/miPerfil', (req, res)=>{
+	res.render('miPerfil')
 })
 
 
@@ -44,13 +48,23 @@ router.post('/registrarse',async (req, res)=>{
 				if(resultado){
 					req.body.contraseña = encriptarContraseña
 					await usuarios.create(req.body)
-					res.send("mi perfil")
+					const nombreDeUsuarioO = await usuarios.findOne({where:{nombreDeUsuario: `${req.body.nombreDeUsuario}`}, raw: true, attributes:['nombreDeUsuario']})
+					const nombreDeUsuario = nombreDeUsuarioO.nombreDeUsuario
+					console.log(nombreDeUsuario)
+					const emailO = await usuarios.findOne({where:{nombreDeUsuario: `${req.body.nombreDeUsuario}`}, raw: true, attributes:['email']})
+					console.log(emailO)
+					const email = emailO.email
+					const edadO = await usuarios.findOne({where:{nombreDeUsuario: `${req.body.nombreDeUsuario}`}, raw: true, attributes:['edad']})
+					const edad = edadO.edad
+					const generoO = await usuarios.findOne({where:{nombreDeUsuario: `${req.body.nombreDeUsuario}`}, raw: true, attributes:['genero']})
+					const genero = generoO.genero
+					res.render(`miPerfil`, {email, edad, nombreDeUsuario, genero})
+				}
 				}else{
 					res.send("no coinciden las contraseñas")
 				}
 			}
-		}
-	} catch (error) {
+	}catch (error) {
 		if(error instanceof z.ZodError){
 			throw res.send(error.issues[0].message)
 		}else{
@@ -69,7 +83,61 @@ router.post('/iniciarSesion', async (req, res)=>{
 	if(!coincidencia){
 		res.send("contraseña incorrecta")
 	}else{
-		res.send("mi perfil")
+		const nombreDeUsuarioO = await usuarios.findOne({where:{nombreDeUsuario: `${req.body.nombreDeUsuario}`}, raw: true, attributes:['nombreDeUsuario']})
+		const nombreDeUsuario = nombreDeUsuarioO.nombreDeUsuario
+		const emailO = await usuarios.findOne({where:{nombreDeUsuario: `${req.body.nombreDeUsuario}`}, raw: true, attributes:['email']})
+		const email = emailO.email
+		const edadO = await usuarios.findOne({where:{nombreDeUsuario: `${req.body.nombreDeUsuario}`}, raw: true, attributes:['edad']})
+		const edad = edadO.edad
+		const generoO = await usuarios.findOne({where:{nombreDeUsuario: `${req.body.nombreDeUsuario}`}, raw: true, attributes:['genero']})
+		const genero = generoO.genero
+		res.render(`miPerfil`, {email, edad, nombreDeUsuario, genero})
+	}
+})
+
+
+router.put('/cambiarNombreDeUsuario', async (req, res)=>{
+	try {
+		await cambiarNombreDeUsuarioSchema.parse(req.body)
+	} catch (error) {
+		if(error instanceof z.ZodError){
+			throw res.send(error.issues[0].message)
+		}
+	}
+	const viejoNombreDeUsuarioYContraseña = await usuarios.findOne({where: {nombreDeUsuario:`${req.body.nombreDeUsuario}`}, attributes:['nombreDeUsuario', 'contraseña','id'], raw: true})
+
+	if(viejoNombreDeUsuarioYContraseña === null){
+		throw res.send("nombre de usuario inexistente")
+	}
+	const compararContraseñas = await bcrypt.compare(`${req.body.contraseña}`, `${viejoNombreDeUsuarioYContraseña.contraseña}`)
+	if(!compararContraseñas){
+		throw res.send("contraseña incorrecta")
+	}else{
+		await usuarios.update(
+			{nombreDeUsuario:`${req.body.nuevoNombreDeUsuario}`},
+			{where: {nombreDeUsuario: `${req.body.nombreDeUsuario}`}}
+		)
+		
+		const nuevoNombreDeUsuarioO = await usuarios.findOne({where: {nombreDeUsuario:`${req.body.nuevoNombreDeUsuario}`}, attributes:['nombreDeUsuario'], raw: true})
+		const nuevoNombreDeUsuario = await nuevoNombreDeUsuarioO.nombreDeUsuario
+		console.log(nuevoNombreDeUsuario)
+		res.render("nuevoNombreDeUsuario", {nuevoNombreDeUsuario} )
+	}
+})
+
+
+router.delete('/borrarUsuario',async (req,res)=>{
+	const usuario = await usuarios.findOne({where:{nombreDeUsuario: `${req.body.nombreDeUsuario}`}, raw: true, attributes: ['nombreDeUsuario', 'contraseña', 'id']}) 
+	if(usuario === null){
+		throw res.send("el usuario no existe")
+	}
+	const coincidencia = await bcrypt.compare(`${req.body.contraseña}`, `${usuario.contraseña}`) 
+	if(!coincidencia){
+		res.send("contraseña incorrecta")
+	}
+	else{
+		res.send("usuario borrado")
+		await usuarios.destroy({where:{id:`${usuario.id}`}})
 	}
 })
 
