@@ -1,7 +1,14 @@
+//primero importamos sequelize para definir el modelo de usuarios
 import { DataTypes } from "sequelize";
 import sequelize from "../DB/connectDB.js";
 
+
+//definimos el modelo de usuarios
 const usuarios = sequelize.define('usuarios',{
+
+
+    //definimos los campos del modelo
+    //cada campo tiene un tipo de dato y algunas validaciones
     id:{
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -50,4 +57,8 @@ const usuarios = sequelize.define('usuarios',{
         }
     }
 })
+
+
+//sincronizamos el modelo con la base de datos
+//esto creará la tabla si no existe o actualizará la tabla si ya existe
 export default usuarios
